@@ -51,7 +51,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake ninja-build libglfw3-dev libglm-dev libvulkan-dev libwayland-dev wayland-protocols
+        sudo apt-get install -y cmake ninja-build libglfw3-dev libglm-dev libvulkan-dev libwayland-dev wayland-protocols libxkbcommon-dev
 
     - name: Install dependencies (Windows)
       if: runner.os == 'Windows'
