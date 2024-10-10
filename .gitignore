@@ -34,3 +34,7 @@
 # vs
 /.vs
 /out
+bin/
+build/
+.idea/
+CMakeSettings.json
