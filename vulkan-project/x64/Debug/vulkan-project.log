@@ -1,0 +1,7 @@
+﻿  first_app.cpp
+  main.cpp
+  oys_device.cpp
+  oys_window.cpp
+  Generating Code...
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+  vulkan-project.vcxproj -> C:\Users\georg\Documents\Github\vulkan-project\x64\Debug\vulkan-project.exe
