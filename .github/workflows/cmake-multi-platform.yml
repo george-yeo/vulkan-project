@@ -50,7 +50,7 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake ninja-build libglfw3-dev libglm-dev libvulkan-dev wayland-protocols wayland-devel
+        sudo apt-get install -y cmake ninja-build libglfw3-dev libglm-dev libvulkan-dev libwayland-dev wayland-protocols
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
