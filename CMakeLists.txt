@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION "3.29")
 project("Oyster Engine")
 
 # Define the C++ standard
-set("CMAKE_CXX_STANDARD 17")
+set("CMAKE_CXX_STANDARD 23")
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Include the FetchContent module
 include(FetchContent)
@@ -27,12 +28,20 @@ FetchContent_MakeAvailable(glm)
 # Find Vulkan SDK
 find_package(Vulkan REQUIRED)
 
-# Enable testing
-enable_testing()
+# Include project header files
+include_directories(include)
 
-# Add subdirectory for sources and tests
+# Add subdirectory for sources
 add_subdirectory("src")
-add_subdirectory("tests")
 
 # Link the libraries to the program
 target_link_libraries(oyster_engine PRIVATE glfw glm Vulkan::Vulkan)
+
+# Copy shaders to build directory
+file(COPY shaders/simple_shader.vert.spv DESTINATION ${CMAKE_BINARY_DIR}/shaders)
+file(COPY shaders/simple_shader.frag.spv DESTINATION ${CMAKE_BINARY_DIR}/shaders)
+
+# Enable testing
+enable_testing()
+
+add_subdirectory("tests")

@@ -38,3 +38,4 @@ bin/
 build/
 .idea/
 CMakeSettings.json
+compile.bat
