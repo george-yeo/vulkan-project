@@ -18,20 +18,20 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         include:
           - os: ubuntu-latest
-            cmake: "3.16"
+            cmake: "3.30.5"
           - os: windows-latest
-            cmake: "3.18"
+            cmake: "3.30.5"
           - os: macos-latest
-            cmake: "3.18"
+            cmake: "3.30.5"
 
     steps:
     # Checkout the project repository
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
     
     # Set up CMake on each platform
     - name: Set up CMake
-      uses: lukka/get-cmake@v3
+      uses: lukka/get-cmake@v3.30.5
       with:
         cmake-version: ${{ matrix.cmake }}
 
