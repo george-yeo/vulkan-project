@@ -62,7 +62,7 @@ jobs:
       if: ${{ matrix.shortName == 'Linux' }}
       run: |
         sudo apt-get update
-        sudo apt-get install -y libglfw3-dev libglm-dev
+        sudo apt-get install -y libglfw3-dev libglm-dev libwayland-dev
 
     - name: Setup VulkanCI
       uses: NcStudios/VulkanCI@v1.1
@@ -85,6 +85,13 @@ jobs:
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
+    # Cache CMake build files to speed up subsequent builds
+    - name: Cache CMake
+      uses: actions/cache@v3
+      with:
+        path: build
+        key: ${{ runner.os }}-cmake-${{ hashFiles('CMakeLists.txt') }}
+    
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
