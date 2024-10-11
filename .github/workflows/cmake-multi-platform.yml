@@ -38,20 +38,19 @@ jobs:
     # Install Vulkan SDK, GLFW, GLM based on platform
     - name: Install Dependencies
       run: |
-        if [[ "${{ matrix.os }}" == 'ubuntu-latest' ]]; then
+        if [ "${{ matrix.os }}" == 'ubuntu-latest' ]; then
           sudo apt update
           sudo apt install -y libglfw3-dev libglm-dev
           # Install Vulkan SDK
           sudo apt install -y vulkan-tools libvulkan-dev
-        elif [[ "${{ matrix.os }}" == 'macos-latest' ]]; then
+        elif [ "${{ matrix.os }}" == 'macos-latest' ]; then
           brew install glfw glm vulkan-headers
           # Vulkan SDK for macOS: https://vulkan.lunarg.com/sdk/home
           # Assuming you’ve already set up Vulkan SDK locally
-        elif [[ "${{ matrix.os }}" == 'windows-latest' ]]; then
+        elif [ "${{ matrix.os }}" == 'windows-latest' ]; then
           choco install glfw glm
-          # Vulkan SDK installation on Windows using Chocolatey:
-          choco install vulkan-sdk
-        fi
+          # Vulkan SDK installation on Windows using Chocolatey or manually
+      shell: bash  # Ensure that this runs in Bash even on Windows
 
     # Create build directory and configure CMake
     - name: Configure CMake
