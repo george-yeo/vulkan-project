@@ -2,4 +2,4 @@
 file(GLOB SOURCES "*.cpp")
 
 # Create the main executable
-add_executable("oyster_engine" ${SOURCES} "oys_pipeline.cpp")
+add_executable("oyster_engine" ${SOURCES} "oys_pipeline.cpp" "oys_model.cpp")

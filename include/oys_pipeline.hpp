@@ -2,6 +2,8 @@
 
 #include "oys_device.hpp"
 
+#include "oys_model.hpp"
+
 // std
 #include <string>
 #include <vector>
