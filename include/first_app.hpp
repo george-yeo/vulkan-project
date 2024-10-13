@@ -30,7 +30,10 @@ namespace oys {
 		void createPipelineLayout();
 		void createPipeline();
 		void createCommandBuffers();
+		void freeCommandBuffers();
 		void drawFrame();
+		void recreateSwapChain();
+		void recordCommandBuffer(int imageIndex);
 
 		void sierpinski(
 			std::vector<OysModel::Vertex>& vertices,
@@ -41,7 +44,7 @@ namespace oys {
 
 		OysWindow oysWindow{ WIDTH, HEIGHT, "Hello Vulkan!" };
 		OysDevice oysDevice{ oysWindow };
-		OysSwapChain oysSwapChain{ oysDevice, oysWindow.getExtent() };
+		std::unique_ptr<OysSwapChain> oysSwapChain;
 		std::unique_ptr<OysPipeline> oysPipeline;
 		VkPipelineLayout pipelineLayout;
 		std::vector<VkCommandBuffer> commandBuffers;

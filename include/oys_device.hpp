@@ -35,7 +35,7 @@ namespace oys {
 
         // Not copyable or movable
         OysDevice(const OysDevice&) = delete;
-        void operator=(const OysDevice&) = delete;
+        OysDevice& operator=(const OysDevice&) = delete;
         OysDevice(OysDevice&&) = delete;
         OysDevice& operator=(OysDevice&&) = delete;
 

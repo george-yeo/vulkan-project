@@ -6,6 +6,7 @@
 #include <vulkan/vulkan.h>
 
 // std lib headers
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -16,10 +17,11 @@ namespace oys {
         static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
         OysSwapChain(OysDevice& deviceRef, VkExtent2D windowExtent);
+        OysSwapChain(OysDevice& deviceRef, VkExtent2D windowExtent, std::shared_ptr<OysSwapChain> previous);
         ~OysSwapChain();
 
         OysSwapChain(const OysSwapChain&) = delete;
-        void operator=(const OysSwapChain&) = delete;
+        OysSwapChain& operator=(const OysSwapChain&) = delete;
 
         VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
         VkRenderPass getRenderPass() { return renderPass; }
@@ -39,6 +41,7 @@ namespace oys {
         VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
 
     private:
+        void init();
         void createSwapChain();
         void createImageViews();
         void createDepthResources();
@@ -69,6 +72,7 @@ namespace oys {
         VkExtent2D windowExtent;
 
         VkSwapchainKHR swapChain;
+        std::shared_ptr<OysSwapChain> oldSwapChain;
 
         std::vector<VkSemaphore> imageAvailableSemaphores;
         std::vector<VkSemaphore> renderFinishedSemaphores;
