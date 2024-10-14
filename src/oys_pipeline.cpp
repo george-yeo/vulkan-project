@@ -1,11 +1,16 @@
 #include "oys_pipeline.hpp"
 
 // std
-#include <iostream>
+#include <cassert>
+#include <cstdint>
 #include <fstream>
+#include <iosfwd>
+#include <oys_device.hpp>
+#include <oys_model.hpp>
 #include <stdexcept>
 #include <string>
-#include <cassert>
+#include <vector>
+#include <vulkan/vulkan_core.h>
 
 namespace oys {
 
@@ -30,8 +35,8 @@ namespace oys {
 			throw std::runtime_error("failed to open file: " + filepath);
 		}
 
-		size_t fileSize = static_cast<size_t>(file.tellg());
-		std::vector<char> buffer(fileSize);
+		auto fileSize = static_cast<std::streamsize>(file.tellg());
+		std::vector<char> buffer(static_cast<size_t>(fileSize));
 
 		file.seekg(0);
 		file.read(buffer.data(), fileSize);

@@ -2,6 +2,9 @@
 
 //std
 #include <stdexcept>
+#include <string>
+#include <GLFW/glfw3.h>
+#include <vulkan/vulkan_core.h>
 
 namespace oys {
 

@@ -1,10 +1,10 @@
 #pragma once
 
 #include "oys_device.hpp"
+#include "oys_model.hpp"
 #include "oys_pipeline.hpp"
 #include "oys_swap_chain.hpp"
 #include "oys_window.hpp"
-#include "oys_model.hpp"
 
 // std
 #include <memory>
@@ -33,7 +33,7 @@ namespace oys {
 		void freeCommandBuffers();
 		void drawFrame();
 		void recreateSwapChain();
-		void recordCommandBuffer(int imageIndex);
+		void recordCommandBuffer(size_t imageIndex);
 
 		void sierpinski(
 			std::vector<OysModel::Vertex>& vertices,

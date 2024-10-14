@@ -2,6 +2,12 @@
 
 // std
 #include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <oys_device.hpp>
+#include <vector>
+#include <vulkan/vulkan_core.h>
 
 namespace oys {
 	OysModel::OysModel(OysDevice& device, const std::vector<Vertex>& vertices) : oysDevice{ device } {

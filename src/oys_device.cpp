@@ -1,19 +1,27 @@
 #include "oys_device.hpp"
 
 // std headers
-#include <cstring>
+#include <cstdint>
+#include <GLFW/glfw3.h>
 #include <iostream>
+#include <oys_window.hpp>
 #include <set>
+#include <stdexcept>
+#include <string>
+#include <string.h>
 #include <unordered_set>
+#include <vector>
+#include <vulkan/vk_platform.h>
+#include <vulkan/vulkan_core.h>
 
 namespace oys {
 
     // local callback functions
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-        VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-        VkDebugUtilsMessageTypeFlagsEXT messageType,
+        [[maybe_unused]] VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+        [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageType,
         const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-        void* pUserData) {
+        [[maybe_unused]] void* pUserData) {
         std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
         return VK_FALSE;
@@ -329,7 +337,7 @@ namespace oys {
         std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
         vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
-        int i = 0;
+        uint32_t i = 0;
         for (const auto& queueFamily : queueFamilies) {
             if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 indices.graphicsFamily = i;
@@ -394,12 +402,12 @@ namespace oys {
         throw std::runtime_error("failed to find supported format!");
     }
 
-    uint32_t OysDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+    uint32_t OysDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags propertyFlags) {
         VkPhysicalDeviceMemoryProperties memProperties;
         vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
         for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
             if ((typeFilter & (1 << i)) &&
-                (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+                (memProperties.memoryTypes[i].propertyFlags & propertyFlags) == propertyFlags) {
                 return i;
             }
         }
@@ -410,7 +418,7 @@ namespace oys {
     void OysDevice::createBuffer(
         VkDeviceSize size,
         VkBufferUsageFlags usage,
-        VkMemoryPropertyFlags properties,
+        VkMemoryPropertyFlags propertyFlags,
         VkBuffer& buffer,
         VkDeviceMemory& bufferMemory) {
         VkBufferCreateInfo bufferInfo{};
@@ -429,7 +437,7 @@ namespace oys {
         VkMemoryAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memRequirements.size;
-        allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+        allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, propertyFlags);
 
         if (vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
             throw std::runtime_error("failed to allocate vertex buffer memory!");
@@ -511,7 +519,7 @@ namespace oys {
 
     void OysDevice::createImageWithInfo(
         const VkImageCreateInfo& imageInfo,
-        VkMemoryPropertyFlags properties,
+        VkMemoryPropertyFlags propertyFlags,
         VkImage& image,
         VkDeviceMemory& imageMemory) {
         if (vkCreateImage(device_, &imageInfo, nullptr, &image) != VK_SUCCESS) {
@@ -524,7 +532,7 @@ namespace oys {
         VkMemoryAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memRequirements.size;
-        allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+        allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, propertyFlags);
 
         if (vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
             throw std::runtime_error("failed to allocate image memory!");

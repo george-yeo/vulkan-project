@@ -2,8 +2,8 @@
 
 // std
 #include <cstdlib>
+#include <exception>
 #include <iostream>
-#include <stdexcept>
 
 int main() {
 	oys::FirstApp app{};

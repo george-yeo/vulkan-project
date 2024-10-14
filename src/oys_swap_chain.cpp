@@ -2,12 +2,15 @@
 
 // std
 #include <array>
-#include <cstdlib>
-#include <cstring>
+#include <cstdint>
 #include <iostream>
 #include <limits>
-#include <set>
+#include <memory>
+#include <oys_device.hpp>
 #include <stdexcept>
+#include <utility>
+#include <vector>
+#include <vulkan/vulkan_core.h>
 
 namespace oys {
 
@@ -44,7 +47,7 @@ namespace oys {
             swapChain = nullptr;
         }
 
-        for (int i = 0; i < depthImages.size(); i++) {
+        for (size_t i = 0; i < depthImages.size(); i++) {
             vkDestroyImageView(device.device(), depthImageViews[i], nullptr);
             vkDestroyImage(device.device(), depthImages[i], nullptr);
             vkFreeMemory(device.device(), depthImageMemorys[i], nullptr);
@@ -280,14 +283,14 @@ namespace oys {
         for (size_t i = 0; i < imageCount(); i++) {
             std::array<VkImageView, 2> attachments = { swapChainImageViews[i], depthImageViews[i] };
 
-            VkExtent2D swapChainExtent = getSwapChainExtent();
+            VkExtent2D extents = getSwapChainExtent();
             VkFramebufferCreateInfo framebufferInfo = {};
             framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
             framebufferInfo.renderPass = renderPass;
             framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
             framebufferInfo.pAttachments = attachments.data();
-            framebufferInfo.width = swapChainExtent.width;
-            framebufferInfo.height = swapChainExtent.height;
+            framebufferInfo.width = extents.width;
+            framebufferInfo.height = extents.height;
             framebufferInfo.layers = 1;
 
             if (vkCreateFramebuffer(
@@ -302,18 +305,18 @@ namespace oys {
 
     void OysSwapChain::createDepthResources() {
         VkFormat depthFormat = findDepthFormat();
-        VkExtent2D swapChainExtent = getSwapChainExtent();
+        VkExtent2D extents = getSwapChainExtent();
 
         depthImages.resize(imageCount());
         depthImageMemorys.resize(imageCount());
         depthImageViews.resize(imageCount());
 
-        for (int i = 0; i < depthImages.size(); i++) {
+        for (size_t i = 0; i < depthImages.size(); i++) {
             VkImageCreateInfo imageInfo{};
             imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
             imageInfo.imageType = VK_IMAGE_TYPE_2D;
-            imageInfo.extent.width = swapChainExtent.width;
-            imageInfo.extent.height = swapChainExtent.height;
+            imageInfo.extent.width = extents.width;
+            imageInfo.extent.height = extents.height;
             imageInfo.extent.depth = 1;
             imageInfo.mipLevels = 1;
             imageInfo.arrayLayers = 1;

@@ -3,8 +3,9 @@ cmake_minimum_required(VERSION "3.29")
 project("oys_engine")
 
 # Define the C++ standard
-set("CMAKE_CXX_STANDARD 23")
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Include the FetchContent module
 include(FetchContent)
