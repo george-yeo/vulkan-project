@@ -45,7 +45,8 @@ jobs:
             c_compiler: cl
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
@@ -54,17 +55,17 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    - name: Setup MSVC
-      if: ${{ matrix.os == 'windows-latest' }}
-      uses: ilammy/msvc-dev-cmd@v1
-
-    - name: Install dependencies
+    - name: Install dependencies (Ubuntu)
       if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         sudo apt-get update
-        sudo apt update
-                  sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev libglfw3-dev libglm-dev
-
+        sudo apt-get install -y clang-tidy cppcheck lcov doxygen libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev libglfw3-dev libglm-dev
+    
+    - name: Install dependencies (Windows)
+      if: ${{ matrix.os == 'windows-latest' }}
+      run: |
+        choco install llvm doxygen
+      
     - name: Setup VulkanCI
       uses: NcStudios/VulkanCI@v1.1
 
@@ -81,7 +82,7 @@ jobs:
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
-
+    
     # Cache CMake build files to speed up subsequent builds
     - name: Cache CMake
       uses: actions/cache@v3
@@ -94,3 +95,28 @@ jobs:
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest --build-config ${{ matrix.build_type }}
+
+    # Generate coverage report (only run on Linux, for example)
+    - name: Generate Coverage Report
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        lcov --directory . --capture --output-file coverage.info
+        lcov --remove coverage.info '/usr/*' --output-file coverage.info
+        lcov --list coverage.info
+
+    - name: Upload Coverage Report
+      if: matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage-report
+        path: coverage.info
+    
+    # Generate and upload documentation (can be restricted to Linux or run on all platforms)
+    - name: Generate Documentation
+      run: doxygen Doxyfile
+
+    - name: Upload Documentation
+      uses: actions/upload-artifact@v2
+      with:
+        name: documentation
+        path: docs/
