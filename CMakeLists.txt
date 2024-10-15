@@ -91,6 +91,7 @@ endif()
 
 # Compile with code coverage
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "Building with coverage")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 --coverage")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
