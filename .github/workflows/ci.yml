@@ -13,15 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Cache CMake
-        uses: actions/cache@v3
+      - uses: actions/cache@v3
         with:
-          path: ./build/CMakeFiles
-          key: ${{ runner.os }}-cmake-${{ hashFiles('CMakeLists.txt') }}
-      - name: Cache Build
-        uses: actions/cache@v3
-        with:
-          path: ./build
+          path: build
           key: ${{ runner.os }}-build-${{ hashFiles('CMakeLists.txt') }}-${{ github.sha }}
           
       - name: Install dependencies
@@ -53,16 +47,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
+      - uses: actions/cache@v3
+        with:
+          path: build
+          key: ${{ runner.os }}-build-${{ hashFiles('CMakeLists.txt') }}-${{ github.sha }}
+
       - name: Cache CMake
         uses: actions/cache@v3
         with:
-          path: ./build/CMakeFiles
+          path: /usr/local/bin/cmake
           key: ${{ runner.os }}-cmake-${{ hashFiles('CMakeLists.txt') }}
-      - name: Cache Build
-        uses: actions/cache@v3
-        with:
-          path: ./build
-          key: ${{ runner.os }}-build-${{ hashFiles('CMakeLists.txt') }}-${{ github.sha }}
           
       - name: Install dependencies
         run: |
