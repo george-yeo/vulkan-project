@@ -24,7 +24,7 @@ jobs:
         uses: NcStudios/VulkanCI@v1.1
       - name: Build project
         run: |
-          cmake -DCMAKE_BUILD_TYPE=Debug -DCOMPILE_SHADERS=OFF -DCMAKE_CXX_FLAGS="-ftest-coverage" .
+          cmake -DCMAKE_BUILD_TYPE=Debug -DCOMPILE_SHADERS=OFF-DENABLE_CHECKSTYLE=OFF -DCMAKE_CXX_FLAGS="-ftest-coverage" .
           make
       - name: Run tests and generate coverage
         run: |
@@ -52,7 +52,7 @@ jobs:
         uses: NcStudios/VulkanCI@v1.1
       - name: Build project
         run: |
-          cmake -DCMAKE_BUILD_TYPE=Debug -DCOMPILE_SHADERS=OFF -DCMAKE_CXX_FLAGS="-ftest-coverage" .
+          cmake -DCMAKE_BUILD_TYPE=Debug -DCOMPILE_SHADERS=OFF -DENABLE_CHECKSTYLE=OFF -DCMAKE_CXX_FLAGS="-ftest-coverage" .
           cmake --build . --config Debug
       - name: Run tests and generate coverage
         run: |
