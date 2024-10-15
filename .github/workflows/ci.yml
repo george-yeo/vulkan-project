@@ -84,7 +84,7 @@ jobs:
       - name: Generate documentation
         run: doxygen
       - name: Upload documentation to GitHub Pages
-        uses: actions/deploy-pages@v2
+        uses: actions/upload-artifact@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          folder: docs
+          name: documentation
+          path: docs/
