@@ -89,6 +89,13 @@ if(COMPILE_SHADERS)
     )
 endif()
 
+# Compile with code coverage
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 --coverage")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+endif()
+
 # Include project header files
 include_directories(include)
 
@@ -99,7 +106,7 @@ add_subdirectory("src")
 target_link_libraries(oyster_engine PRIVATE glfw glm Vulkan::Vulkan)
 target_include_directories(oyster_engine PRIVATE ${Vulkan_INCLUDE_DIRS})
 
-option(ENABLE_CHECKSTYLE "Cland-tidy and Cppcheck checkstyle" ON)
+option(ENABLE_CHECKSTYLE "Clang-tidy and Cppcheck checkstyle" ON)
 
 if(ENABLE_CHECKSTYLE)
     # Enable clang-tidy
