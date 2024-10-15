@@ -91,7 +91,7 @@ if(COMPILE_SHADERS)
 endif()
 
 # Compile with code coverage
-if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT COMPILE_SHADERS)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT COMPILE_SHADERS AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(STATUS "Building with coverage")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 --coverage")
