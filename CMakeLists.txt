@@ -138,24 +138,6 @@ if(ENABLE_CHECKSTYLE)
     endif()
 endif()
 
-# Add Doxygen
-find_package(Doxygen)
-
-if(DOXYGEN_FOUND)
-    set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/docs)
-    set(DOXYGEN_INPUT_DIR ${CMAKE_SOURCE_DIR}/src)
-    set(DOXYGEN_CONFIG_FILE ${CMAKE_SOURCE_DIR}/Doxyfile)
-
-    configure_file(${DOXYGEN_CONFIG_FILE} ${CMAKE_BINARY_DIR}/Doxyfile @ONLY)
-
-    add_custom_target(doc ALL
-        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/Doxyfile
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        COMMENT "Generating API documentation with Doxygen"
-        VERBATIM
-    )
-endif()
-
 # Enable testing
 enable_testing()
 
