@@ -99,31 +99,35 @@ add_subdirectory("src")
 target_link_libraries(oyster_engine PRIVATE glfw glm Vulkan::Vulkan)
 target_include_directories(oyster_engine PRIVATE ${Vulkan_INCLUDE_DIRS})
 
-# Enable clang-tidy
-set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*")
+option(ENABLE_CHECKSTYLE "Cland-tidy and Cppcheck checkstyle" ON)
 
-# Add cppcheck custom target
-find_program(CPPCHECK cppcheck)
+if(COMPILE_SHADERS)
+    # Enable clang-tidy
+    set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*")
 
-# Define the cppcheck options
-set(CPPCHECK_OPTIONS
-    --enable=all               # Enable all checks (including style, performance, etc.)
-    --inconclusive             # Include inconclusive results (for thorough analysis)
-    --error-exitcode=1         # Exit with code 1 if any errors are found (useful in CI)
-    --suppress=missingInclude  # Suppress include-related warnings (can be configured as needed)
-    --inline-suppr             # Enable inline suppressions within the code
-    --force                    # Force checking of all files
-    -j 4                       # Use multiple threads for faster checks
-)
+    # Add cppcheck custom target
+    find_program(CPPCHECK cppcheck)
 
-# Custom target to run cppcheck on all source files
-if(CPPCHECK)
-    add_custom_target(run-cppcheck
-        COMMAND ${CPPCHECK} ${CPPCHECK_OPTIONS} ${CMAKE_SOURCE_DIR}/src/
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Running cppcheck analysis on source files"
-        VERBATIM
+    # Define the cppcheck options
+    set(CPPCHECK_OPTIONS
+        --enable=all               # Enable all checks (including style, performance, etc.)
+        --inconclusive             # Include inconclusive results (for thorough analysis)
+        --error-exitcode=1         # Exit with code 1 if any errors are found (useful in CI)
+        --suppress=missingInclude  # Suppress include-related warnings (can be configured as needed)
+        --inline-suppr             # Enable inline suppressions within the code
+        --force                    # Force checking of all files
+        -j 4                       # Use multiple threads for faster checks
     )
+
+    # Custom target to run cppcheck on all source files
+    if(CPPCHECK)
+        add_custom_target(run-cppcheck
+            COMMAND ${CPPCHECK} ${CPPCHECK_OPTIONS} ${CMAKE_SOURCE_DIR}/src/
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Running cppcheck analysis on source files"
+            VERBATIM
+        )
+    endif()
 endif()
 
 # Add Doxygen
