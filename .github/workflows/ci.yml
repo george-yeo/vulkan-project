@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install cmake gtest gcov lcov checkstyle
+          sudo apt-get install cmake lcov checkstyle libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev 
       - name: Setup VulkanCI
         uses: NcStudios/VulkanCI@v1.1
       - name: Build project
@@ -39,7 +39,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: |
-          choco install cmake gtest gcov lcov checkstyle
+          choco install cmake lcov checkstyle libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev 
       - name: Setup VulkanCI
         uses: NcStudios/VulkanCI@v1.1
       - name: Build project
@@ -63,7 +63,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: |
-          brew install cmake gtest gcov lcov checkstyle
+          brew install cmake lcov checkstyle libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev 
       - name: Setup VulkanCI
         uses: NcStudios/VulkanCI@v1.1
       - name: Build project
