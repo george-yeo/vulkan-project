@@ -72,14 +72,14 @@ jobs:
         run: |
           if (Test-Path "C:\Program Files\CMake\bin\cmake.exe") {
             Write-Host "CMake is available from cache."
-            echo "::set-output name=cmake_installed::false"  # Indicate that CMake is installed
+            echo "cmake_installed=false" >> $GITHUB_ENV  # Set the environment variable
           } else {
             Write-Host "CMake not found, installing..."
-            echo "::set-output name=cmake_installed::true"  # Indicate that CMake needs installation
+            echo "cmake_installed=true" >> $GITHUB_ENV  # Set the environment variable
           }
-
+  
       - name: Install CMake
-        if: steps.check_cmake.outputs.cmake_installed == 'true'
+        if: env.cmake_installed == 'true'
         run: |
           choco install cmake
           
