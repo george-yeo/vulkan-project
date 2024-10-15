@@ -106,7 +106,7 @@ jobs:
 
     - name: Upload Coverage Report
       if: matrix.os == 'ubuntu-latest'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: coverage.info
@@ -116,7 +116,7 @@ jobs:
       run: doxygen Doxyfile
 
     - name: Upload Documentation
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: documentation
         path: docs/
