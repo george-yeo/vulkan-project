@@ -65,10 +65,24 @@ jobs:
           key: ${{ runner.os }}-cmakefiles-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
             ${{ runner.os }}-cmakefiles
+            
+      - name: Check CMake Installation
+        run: |
+          if exist "C:\Program Files\CMake\bin\cmake.exe" (
+            echo "CMake is available from cache."
+          ) else (
+            echo "CMake not found, installing..."
+            echo "::set-output name=cmake_installed::true"
+          )
+
+      - name: Install CMake
+        if: steps.check_cmake.outputs.cmake_installed == 'true'
+        run: |
+          choco install cmake
           
       - name: Install dependencies
         run: |
-          choco install cmake lcov glfw3
+          choco install glfw3
       - name: Setup VulkanCI
         uses: NcStudios/VulkanCI@v1.1
       - name: Build project
