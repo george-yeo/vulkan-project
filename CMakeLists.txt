@@ -32,30 +32,31 @@ find_package(Vulkan REQUIRED)
 option(COMPILE_SHADERS "Compile shaders to SPIR-V during the build process" ON)
 
 if(COMPILE_SHADERS)
-    # Fetch glslang and SPRI-V tools for shader compilation
-    FetchContent_Declare(
-        spirv-headers
-        GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Headers.git
-        GIT_TAG vulkan-sdk-1.3.283.0  # You can specify a stable tag here if preferred
-    )
-    FetchContent_MakeAvailable(spirv-headers)
+    ## Fetch glslang and SPRI-V tools for shader compilation
+    #FetchContent_Declare(
+    #    spirv-headers
+    #    GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Headers.git
+    #    GIT_TAG vulkan-sdk-1.3.283.0  # You can specify a stable tag here if preferred
+    #)
+    #FetchContent_MakeAvailable(spirv-headers)
 
-    FetchContent_Declare(
-        spirv-tools
-        GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Tools.git
-        GIT_TAG vulkan-sdk-1.3.283.0
-    )
-    FetchContent_MakeAvailable(spirv-tools)
+    #FetchContent_Declare(
+    #    spirv-tools
+    #    GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Tools.git
+    #    GIT_TAG vulkan-sdk-1.3.283.0
+    #)
+    #FetchContent_MakeAvailable(spirv-tools)
 
-    FetchContent_Declare(
-      glslang
-      GIT_REPOSITORY https://github.com/KhronosGroup/glslang.git
-      GIT_TAG vulkan-sdk-1.3.283.0
-    )
-    FetchContent_MakeAvailable(glslang)
+    #FetchContent_Declare(
+    #  glslang
+    #  GIT_REPOSITORY https://github.com/KhronosGroup/glslang.git
+    #  GIT_TAG vulkan-sdk-1.3.283.0
+    #)
+    #FetchContent_MakeAvailable(glslang)
 
     # Specify the path to the glslc executable
-    set(GLSLC_EXECUTABLE "${glslang_SOURCE_DIR}/glslc")
+    #set(GLSLC_EXECUTABLE "${glslang_SOURCE_DIR}/glslc")
+    find_program(GLSLC_EXECUTABLE glslc)
     
     set(SHADERS
         ${CMAKE_SOURCE_DIR}/shaders/simple_shader.vert
@@ -90,7 +91,7 @@ if(COMPILE_SHADERS)
 endif()
 
 # Compile with code coverage
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT COMPILE_SHADERS)
     message(STATUS "Building with coverage")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 --coverage")

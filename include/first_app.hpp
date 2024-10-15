@@ -1,6 +1,7 @@
 #pragma once
 
 #include "oys_device.hpp"
+#include "oys_game_object.hpp"
 #include "oys_model.hpp"
 #include "oys_pipeline.hpp"
 #include "oys_swap_chain.hpp"
@@ -26,7 +27,7 @@ namespace oys {
 		void run();
 
 	private:
-		void loadModels();
+		void loadGameObjects();
 		void createPipelineLayout();
 		void createPipeline();
 		void createCommandBuffers();
@@ -34,6 +35,7 @@ namespace oys {
 		void drawFrame();
 		void recreateSwapChain();
 		void recordCommandBuffer(size_t imageIndex);
+		void renderGameObjects(VkCommandBuffer commandBuffer);
 
 		void sierpinski(
 			std::vector<OysModel::Vertex>& vertices,
@@ -48,6 +50,6 @@ namespace oys {
 		std::unique_ptr<OysPipeline> oysPipeline;
 		VkPipelineLayout pipelineLayout;
 		std::vector<VkCommandBuffer> commandBuffers;
-		std::unique_ptr<OysModel> oysModel;
+		std::vector<OysGameObject> gameObjects;
 	};
 } // namespace oys
