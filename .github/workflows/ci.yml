@@ -59,9 +59,9 @@ jobs:
       - name: Run tests and generate coverage
         run: |
           ctest --output-on-failure
-          # lcov --capture --directory . --output-file coverage.info
-          # lcov --remove coverage.info /usr/src/ --output-file coverage.info
-          # genhtml coverage.info --output-directory coverage
+# lcov --capture --directory . --output-file coverage.info
+# lcov --remove coverage.info /usr/src/ --output-file coverage.info
+# genhtml coverage.info --output-directory coverage
 
   # build-macos:
   #   runs-on: macos-latest
