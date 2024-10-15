@@ -64,7 +64,7 @@ jobs:
           path: C:\Program Files\CMake\bin
           key: ${{ runner.os }}-cmakefiles-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            ${{ runner.os }}-cmake
+            ${{ runner.os }}-cmakefiles
           
       - name: Install dependencies
         run: |
