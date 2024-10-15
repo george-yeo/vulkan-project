@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install cmake lcov doxygen graphviz libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev libglfw3-dev libglm-dev 
+          sudo apt-get install cmake lcov libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev libglfw3-dev libglm-dev 
       - name: Setup VulkanCI
         uses: NcStudios/VulkanCI@v1.1
       - name: Build project
@@ -54,7 +54,7 @@ jobs:
             ${{ runner.os }}-cmake
       - name: Install dependencies
         run: |
-          choco install cmake lcov graphviz doxygen.install glfw3
+          choco install cmake lcov glfw3
       - name: Setup VulkanCI
         uses: NcStudios/VulkanCI@v1.1
       - name: Build project
@@ -98,11 +98,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Doxygen
-        run: sudo apt-get install doxygen
+        run: sudo apt-get install doxygen graphviz
       - name: Generate documentation
-        run: doxygen
-      - name: Upload documentation to GitHub Pages
-        uses: actions/upload-artifact@v4
+        run: doxygen Doxyfile
+      - name: Deploy Documentation to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          name: documentation
-          path: docs/
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs
+          publish_branch: gh-pages
