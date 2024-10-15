@@ -3,4 +3,4 @@
 # Oyster Game Engine
 
 ## Documentation
-Doxygen generated document [here](https://george-yeo.github.io/vulkan-project/).
+[Available here](https://george-yeo.github.io/vulkan-project/)
