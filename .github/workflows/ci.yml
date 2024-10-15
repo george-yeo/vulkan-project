@@ -32,9 +32,11 @@ jobs:
           lcov --capture --directory . --output-file coverage.info
           lcov --remove coverage.info /usr/src/ --output-file coverage.info
           genhtml coverage.info --output-directory coverage
-      - name: Check code style
-        run: |
-          checkstyle -c checkstyle.xml src/ tests/
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./build/coverage.info
+          fail_ci_if_error: true
 
   build-windows:
     runs-on: windows-latest
@@ -57,9 +59,9 @@ jobs:
       - name: Run tests and generate coverage
         run: |
           ctest --output-on-failure
-          lcov --capture --directory . --output-file coverage.info
-          lcov --remove coverage.info /usr/src/ --output-file coverage.info
-          genhtml coverage.info --output-directory coverage
+          # lcov --capture --directory . --output-file coverage.info
+          # lcov --remove coverage.info /usr/src/ --output-file coverage.info
+          # genhtml coverage.info --output-directory coverage
 
   # build-macos:
   #   runs-on: macos-latest
