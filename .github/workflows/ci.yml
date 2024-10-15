@@ -1,4 +1,4 @@
-name: Vulkan CI
+name: CI
 
 on:
   push:
