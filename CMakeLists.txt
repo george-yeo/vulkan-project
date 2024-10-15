@@ -26,37 +26,37 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glm)
 
-# Fetch glslang and SPRI-V tools for shader compilation
-FetchContent_Declare(
-    spirv-headers
-    GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Headers.git
-    GIT_TAG vulkan-sdk-1.3.283.0  # You can specify a stable tag here if preferred
-)
-FetchContent_MakeAvailable(spirv-headers)
-
-FetchContent_Declare(
-    spirv-tools
-    GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Tools.git
-    GIT_TAG vulkan-sdk-1.3.283.0
-)
-FetchContent_MakeAvailable(spirv-tools)
-
-FetchContent_Declare(
-  glslang
-  GIT_REPOSITORY https://github.com/KhronosGroup/glslang.git
-  GIT_TAG vulkan-sdk-1.3.283.0
-)
-FetchContent_MakeAvailable(glslang)
-
-# Specify the path to the glslc executable
-set(GLSLC_EXECUTABLE "${glslang_SOURCE_DIR}/glslc")
-
 # Find Vulkan SDK
 find_package(Vulkan REQUIRED)
 
 option(COMPILE_SHADERS "Compile shaders to SPIR-V during the build process" ON)
 
 if(COMPILE_SHADERS)
+    # Fetch glslang and SPRI-V tools for shader compilation
+    FetchContent_Declare(
+        spirv-headers
+        GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Headers.git
+        GIT_TAG vulkan-sdk-1.3.283.0  # You can specify a stable tag here if preferred
+    )
+    FetchContent_MakeAvailable(spirv-headers)
+
+    FetchContent_Declare(
+        spirv-tools
+        GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Tools.git
+        GIT_TAG vulkan-sdk-1.3.283.0
+    )
+    FetchContent_MakeAvailable(spirv-tools)
+
+    FetchContent_Declare(
+      glslang
+      GIT_REPOSITORY https://github.com/KhronosGroup/glslang.git
+      GIT_TAG vulkan-sdk-1.3.283.0
+    )
+    FetchContent_MakeAvailable(glslang)
+
+    # Specify the path to the glslc executable
+    set(GLSLC_EXECUTABLE "${glslang_SOURCE_DIR}/glslc")
+    
     set(SHADERS
         ${CMAKE_SOURCE_DIR}/shaders/simple_shader.vert
         ${CMAKE_SOURCE_DIR}/shaders/simple_shader.frag
