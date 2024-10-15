@@ -101,7 +101,7 @@ target_include_directories(oyster_engine PRIVATE ${Vulkan_INCLUDE_DIRS})
 
 option(ENABLE_CHECKSTYLE "Cland-tidy and Cppcheck checkstyle" ON)
 
-if(COMPILE_SHADERS)
+if(ENABLE_CHECKSTYLE)
     # Enable clang-tidy
     set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*")
 
