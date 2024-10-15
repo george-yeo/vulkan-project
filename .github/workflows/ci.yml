@@ -12,6 +12,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/dependencies
+          key: ${{ runner.os }}-deps-${{ hashFiles('CMakeLists.txt') }}
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -37,9 +41,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/dependencies
+          key: ${{ runner.os }}-deps-${{ hashFiles('CMakeLists.txt') }}
       - name: Install dependencies
         run: |
-          choco install cmake lcov doxygen checkstyle libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev libglfw3-dev libglm-dev
+          choco install cmake lcov doxygen checkstyle libxrandr libxinerama libxcursor libxi libxext libwayland libxkbcommon glfw glm
       - name: Setup VulkanCI
         uses: NcStudios/VulkanCI@v1.1
       - name: Build project
