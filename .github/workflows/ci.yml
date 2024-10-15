@@ -67,12 +67,14 @@ jobs:
             ${{ runner.os }}-cmakefiles
             
       - name: Check CMake Installation
+        id: check_cmake
         run: |
           if exist "C:\Program Files\CMake\bin\cmake.exe" (
             echo "CMake is available from cache."
+            echo "::set-output name=cmake_installed::false"  # Indicate that CMake is installed
           ) else (
             echo "CMake not found, installing..."
-            echo "::set-output name=cmake_installed::true"
+            echo "::set-output name=cmake_installed::true"  # Indicate that CMake needs installation
           )
 
       - name: Install CMake
