@@ -22,9 +22,34 @@ FetchContent_MakeAvailable(glfw)
 FetchContent_Declare(
   glm
   GIT_REPOSITORY https://github.com/g-truc/glm.git
-  GIT_TAG 0.9.9.8
+  GIT_TAG 1.0.1
 )
 FetchContent_MakeAvailable(glm)
+
+# Fetch glslang and SPRI-V tools for shader compilation
+FetchContent_Declare(
+    spirv-headers
+    GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Headers.git
+    GIT_TAG vulkan-sdk-1.3.296.0  # You can specify a stable tag here if preferred
+)
+FetchContent_MakeAvailable(spirv-headers)
+
+FetchContent_Declare(
+    spirv-tools
+    GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Tools.git
+    GIT_TAG vulkan-sdk-1.3.296.0
+)
+FetchContent_MakeAvailable(spirv-tools)
+
+FetchContent_Declare(
+  glslang
+  GIT_REPOSITORY https://github.com/KhronosGroup/glslang.git
+  GIT_TAG vulkan-sdk-1.3.296.0
+)
+FetchContent_MakeAvailable(glslang)
+
+# Specify the path to the glslc executable
+set(GLSLC_EXECUTABLE "${glslang_SOURCE_DIR}/glslc")
 
 # Find Vulkan SDK
 find_package(Vulkan REQUIRED)
@@ -44,7 +69,7 @@ foreach(SHADER ${SHADERS})
     # Add custom command to compile the shader
     add_custom_command(
         OUTPUT ${COMPILED_SHADER}                            # The output file
-        COMMAND ${VulkanSDK}/bin/glslc ${SHADER} -o ${COMPILED_SHADER}  # The command
+        COMMAND ${GLSLC_EXECUTABLE} ${SHADER} -o ${COMPILED_SHADER}  # The command
         DEPENDS ${SHADER}                                    # The shader source file                 # Specify that this is a generated file
         COMMENT "Compiling shader ${SHADER} to ${COMPILED_SHADER}"   # Status message
         VERBATIM
