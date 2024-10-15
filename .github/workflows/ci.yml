@@ -40,7 +40,6 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.info
           fail_ci_if_error: true
-          verbose: true
 
   build-windows:
     runs-on: windows-latest
