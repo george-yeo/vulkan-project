@@ -54,36 +54,40 @@ set(GLSLC_EXECUTABLE "${glslang_SOURCE_DIR}/glslc")
 # Find Vulkan SDK
 find_package(Vulkan REQUIRED)
 
-set(SHADERS
-    ${CMAKE_SOURCE_DIR}/shaders/simple_shader.vert
-    ${CMAKE_SOURCE_DIR}/shaders/simple_shader.frag
-)
+option(COMPILE_SHADERS "Compile shaders to SPIR-V during the build process" ON)
 
-set(SHADER_OUTPUT_DIR ${CMAKE_BINARY_DIR}/shaders)
-file(MAKE_DIRECTORY ${SHADER_OUTPUT_DIR})
-
-foreach(SHADER ${SHADERS})
-    get_filename_component(SHADER_NAME ${SHADER} NAME)
-    set(COMPILED_SHADER ${SHADER_OUTPUT_DIR}/${SHADER_NAME}.spv)
-
-    # Add custom command to compile the shader
-    add_custom_command(
-        OUTPUT ${COMPILED_SHADER}                            # The output file
-        COMMAND ${GLSLC_EXECUTABLE} ${SHADER} -o ${COMPILED_SHADER}  # The command
-        DEPENDS ${SHADER}                                    # The shader source file                 # Specify that this is a generated file
-        COMMENT "Compiling shader ${SHADER} to ${COMPILED_SHADER}"   # Status message
-        VERBATIM
+if(COMPILE_SHADERS)
+    set(SHADERS
+        ${CMAKE_SOURCE_DIR}/shaders/simple_shader.vert
+        ${CMAKE_SOURCE_DIR}/shaders/simple_shader.frag
     )
 
-    # Collect the output shaders to a list for later use if needed
-    list(APPEND COMPILED_SHADERS ${COMPILED_SHADER})
-endforeach()
+    set(SHADER_OUTPUT_DIR ${CMAKE_BINARY_DIR}/shaders)
+    file(MAKE_DIRECTORY ${SHADER_OUTPUT_DIR})
 
-# Add a custom target to compile all shaders
-add_custom_target(compile_shaders ALL
-    DEPENDS ${COMPILED_SHADERS}
-    COMMENT "Compiling all shaders"
-)
+    foreach(SHADER ${SHADERS})
+        get_filename_component(SHADER_NAME ${SHADER} NAME)
+        set(COMPILED_SHADER ${SHADER_OUTPUT_DIR}/${SHADER_NAME}.spv)
+
+        # Add custom command to compile the shader
+        add_custom_command(
+            OUTPUT ${COMPILED_SHADER}                            # The output file
+            COMMAND ${GLSLC_EXECUTABLE} ${SHADER} -o ${COMPILED_SHADER}  # The command
+            DEPENDS ${SHADER}                                    # The shader source file                 # Specify that this is a generated file
+            COMMENT "Compiling shader ${SHADER} to ${COMPILED_SHADER}"   # Status message
+            VERBATIM
+        )
+
+        # Collect the output shaders to a list for later use if needed
+        list(APPEND COMPILED_SHADERS ${COMPILED_SHADER})
+    endforeach()
+
+    # Add a custom target to compile all shaders
+    add_custom_target(compile_shaders ALL
+        DEPENDS ${COMPILED_SHADERS}
+        COMMENT "Compiling all shaders"
+    )
+endif()
 
 # Include project header files
 include_directories(include)
