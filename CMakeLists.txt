@@ -29,13 +29,6 @@ FetchContent_MakeAvailable(glm)
 # Find Vulkan SDK
 find_package(Vulkan REQUIRED)
 
-# Copy shaders to build directory
-find_program(GLSLC_EXECUTABLE glslc REQUIRED)
-
-if(NOT GLSLC_EXECUTABLE)
-    message(FATAL_ERROR "glslc shader compiler not found!")
-endif()
-
 set(SHADERS
     ${CMAKE_SOURCE_DIR}/shaders/simple_shader.vert
     ${CMAKE_SOURCE_DIR}/shaders/simple_shader.frag
@@ -51,7 +44,7 @@ foreach(SHADER ${SHADERS})
     # Add custom command to compile the shader
     add_custom_command(
         OUTPUT ${COMPILED_SHADER}                            # The output file
-        COMMAND ${GLSLC_EXECUTABLE} -o ${COMPILED_SHADER} ${SHADER}  # The command
+        COMMAND ${VulkanSDK}/bin/glslc ${SHADER} -o ${COMPILED_SHADER}  # The command
         DEPENDS ${SHADER}                                    # The shader source file                 # Specify that this is a generated file
         COMMENT "Compiling shader ${SHADER} to ${COMPILED_SHADER}"   # Status message
         VERBATIM
@@ -75,6 +68,25 @@ add_subdirectory("src")
 
 # Link the libraries to the program
 target_link_libraries(oyster_engine PRIVATE glfw glm Vulkan::Vulkan)
+target_include_directories(oyster_engine PRIVATE ${Vulkan_INCLUDE_DIRS})
+
+# Add Doxygen
+find_package(Doxygen)
+
+if(DOXYGEN_FOUND)
+    set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/docs)
+    set(DOXYGEN_INPUT_DIR ${CMAKE_SOURCE_DIR}/src)
+    set(DOXYGEN_CONFIG_FILE ${CMAKE_SOURCE_DIR}/Doxyfile)
+
+    configure_file(${DOXYGEN_CONFIG_FILE} ${CMAKE_BINARY_DIR}/Doxyfile @ONLY)
+
+    add_custom_target(doc ALL
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM
+    )
+endif()
 
 # Enable testing
 enable_testing()
