@@ -37,24 +37,72 @@ namespace oys {
 		vkDeviceWaitIdle(oysDevice.device());
 	}
 
-	void FirstApp::loadGameObjects() {
-		std::vector<OysModel::Vertex> vertices{			
-			{{ 0.0f, -0.5f }, {1.0f, 0.0f, 0.0f}},
-			{{ 0.5f, 0.5f }, {0.0f, 1.0f, 0.0f}},
-			{{ -0.5f, 0.5f }, {0.0f, 0.0f, 1.0f}}
+	std::unique_ptr<OysModel> createCubeModel(OysDevice& device, glm::vec3 offset) {
+		std::vector<OysModel::Vertex> vertices{
+
+			// left face (white)
+			{{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+			{{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+			{{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
+			{{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+			{{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
+			{{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+
+			// right face (yellow)
+			{{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+			{{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+			{{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
+			{{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+			{{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
+			{{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+
+			// top face (orange, remember y axis points down)
+			{{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+			{{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+			{{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+			{{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+			{{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+			{{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+
+			// bottom face (red)
+			{{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+			{{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+			{{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
+			{{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+			{{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+			{{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+
+			// nose face (blue)
+			{{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+			{{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+			{{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+			{{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+			{{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+			{{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+
+			// tail face (green)
+			{{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+			{{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+			{{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+			{{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+			{{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+			{{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+
 		};
+		for (auto& v : vertices) {
+			v.position += offset;
+		}
+		return std::make_unique<OysModel>(device, vertices);
+	}
 
-		/*sierpinski(vertices, 5, { -0.5f, 0.5f }, { 0.5f, 0.5f }, { 0.0f, -0.5f });*/
+	void FirstApp::loadGameObjects() {
+		std::shared_ptr<OysModel> oysModel = createCubeModel(oysDevice, { .0f, .0f, .0f });
 
-		auto oysModel = std::make_shared<OysModel>(oysDevice, vertices);
+		auto cube = OysGameObject::createGameObject();
+		cube.model = oysModel;
+		cube.transform.translation = { .0f, .0f, .5f };
+		cube.transform.scale = { .2f,.2f,.2f };
 
-		auto triangle = OysGameObject::createGameObject();
-		triangle.model = oysModel;
-		triangle.color = { .1f, .8f, .1f };
-		triangle.transform2d.translation.x = .2f;
-		triangle.transform2d.scale = { 2.f, .5f };
-		triangle.transform2d.rotation = .25f * glm::two_pi<float>();
-
-		gameObjects.push_back(std::move(triangle));
+		gameObjects.push_back(std::move(cube));
 	}
 } // namespace oys
