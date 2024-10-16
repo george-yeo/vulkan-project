@@ -305,6 +305,7 @@ namespace oys {
 
     void OysSwapChain::createDepthResources() {
         VkFormat depthFormat = findDepthFormat();
+        swapChainDepthFormat = depthFormat;
         VkExtent2D extents = getSwapChainExtent();
 
         depthImages.resize(imageCount());

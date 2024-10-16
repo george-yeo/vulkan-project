@@ -12,7 +12,6 @@
 
 namespace oys {
 	class OysRenderer {
-
 	public:
 		OysRenderer(OysWindow& widnow, OysDevice &device);
 		~OysRenderer();
@@ -24,9 +23,15 @@ namespace oys {
 		bool isFrameInProgress() const { return isFrameStarted; }
 
 		VkCommandBuffer getCurrentCommandBuffer() const {
-			assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
+			assert(isFrameStarted && "cannot get command buffer when frame not in progress");
 
-			return commandBuffers[currentImageIndex];
+			return commandBuffers[currentFrameIndex];
+		}
+
+		uint32_t getFrameIndex() const {
+			assert(isFrameStarted && "cannot get frame index when frame not in progress");
+
+			return currentFrameIndex;
 		}
 
 		VkCommandBuffer beginFrame();
@@ -45,6 +50,7 @@ namespace oys {
 		std::vector<VkCommandBuffer> commandBuffers;
 
 		uint32_t currentImageIndex;
+		uint32_t currentFrameIndex{ 0 };
 		bool isFrameStarted{ false };
 	};
 } // namespace oys

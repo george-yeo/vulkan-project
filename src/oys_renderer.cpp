@@ -29,16 +29,17 @@ namespace oys {
 			oysSwapChain = std::make_unique<OysSwapChain>(oysDevice, extent);
 		}
 		else {
+			std::shared_ptr<OysSwapChain> oldSwapChain = std::move(oysSwapChain);
 			oysSwapChain = std::make_unique<OysSwapChain>(oysDevice, extent, std::move(oysSwapChain));
-			if (oysSwapChain->imageCount() != commandBuffers.size()) {
-				freeCommandBuffers();
-				createCommandBuffers();
+			
+			if (!oldSwapChain->compareSwapFormats(*oysSwapChain.get())) {
+				throw std::runtime_error("swap chain image or depth format has changed");
 			}
 		}
 	}
 
 	void OysRenderer::createCommandBuffers() {
-		commandBuffers.resize(oysSwapChain->imageCount());
+		commandBuffers.resize(OysSwapChain::MAX_FRAMES_IN_FLIGHT);
 
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -105,6 +106,7 @@ namespace oys {
 		}
 
 		isFrameStarted = false;
+		currentFrameIndex = (currentFrameIndex + 1) % OysSwapChain::MAX_FRAMES_IN_FLIGHT;
 	}
 
 	void OysRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
