@@ -2,7 +2,7 @@
 file(GLOB SOURCES "*.cpp")
 
 # Create the main executable
-add_executable("oyster_engine" ${SOURCES} "oys_pipeline.cpp" "oys_model.cpp" )
+add_executable("oyster_engine" ${SOURCES} "oys_pipeline.cpp" "oys_model.cpp"  "oys_renderer.cpp")
 
 if(ENABLE_CHECKSTYLE)
     target_compile_options(oyster_engine PRIVATE

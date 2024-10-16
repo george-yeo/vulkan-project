@@ -4,7 +4,7 @@
 #include "oys_game_object.hpp"
 #include "oys_model.hpp"
 #include "oys_pipeline.hpp"
-#include "oys_swap_chain.hpp"
+#include "oys_renderer.hpp"
 #include "oys_window.hpp"
 
 // std
@@ -30,11 +30,6 @@ namespace oys {
 		void loadGameObjects();
 		void createPipelineLayout();
 		void createPipeline();
-		void createCommandBuffers();
-		void freeCommandBuffers();
-		void drawFrame();
-		void recreateSwapChain();
-		void recordCommandBuffer(size_t imageIndex);
 		void renderGameObjects(VkCommandBuffer commandBuffer);
 
 		void sierpinski(
@@ -46,10 +41,9 @@ namespace oys {
 
 		OysWindow oysWindow{ WIDTH, HEIGHT, "Hello Vulkan!" };
 		OysDevice oysDevice{ oysWindow };
-		std::unique_ptr<OysSwapChain> oysSwapChain;
+		OysRenderer oysRenderer{ oysWindow, oysDevice };
 		std::unique_ptr<OysPipeline> oysPipeline;
 		VkPipelineLayout pipelineLayout;
-		std::vector<VkCommandBuffer> commandBuffers;
 		std::vector<OysGameObject> gameObjects;
 	};
 } // namespace oys
