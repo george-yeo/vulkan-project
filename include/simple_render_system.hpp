@@ -1,5 +1,6 @@
 #pragma once
 
+#include "oys_camera.hpp"
 #include "oys_device.hpp"
 #include "oys_game_object.hpp"
 #include "oys_pipeline.hpp"
@@ -17,7 +18,7 @@ namespace oys {
 		SimpleRenderSystem(const SimpleRenderSystem&) = delete;
 		SimpleRenderSystem& operator=(const SimpleRenderSystem&) = delete;
 
-		void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<OysGameObject>& gameObjects);
+		void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<OysGameObject>& gameObjects, const OysCamera& camera);
 
 	private:
 		void createPipelineLayout();

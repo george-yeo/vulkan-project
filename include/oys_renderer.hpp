@@ -20,6 +20,7 @@ namespace oys {
 		OysRenderer& operator=(const OysRenderer&) = delete;
 
 		VkRenderPass getSwapChainRenderPass() const { return oysSwapChain->getRenderPass(); }
+		float getAspectRatio() const { return oysSwapChain->extentAspectRatio(); }
 		bool isFrameInProgress() const { return isFrameStarted; }
 
 		VkCommandBuffer getCurrentCommandBuffer() const {

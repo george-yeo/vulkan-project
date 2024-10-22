@@ -30,7 +30,7 @@ namespace oys {
 		}
 		else {
 			std::shared_ptr<OysSwapChain> oldSwapChain = std::move(oysSwapChain);
-			oysSwapChain = std::make_unique<OysSwapChain>(oysDevice, extent, std::move(oysSwapChain));
+			oysSwapChain = std::make_unique<OysSwapChain>(oysDevice, extent, oldSwapChain);
 			
 			if (!oldSwapChain->compareSwapFormats(*oysSwapChain.get())) {
 				throw std::runtime_error("swap chain image or depth format has changed");

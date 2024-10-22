@@ -294,10 +294,10 @@ namespace oys {
             framebufferInfo.layers = 1;
 
             if (vkCreateFramebuffer(
-                device.device(),
-                &framebufferInfo,
-                nullptr,
-                &swapChainFramebuffers[i]) != VK_SUCCESS) {
+                    device.device(),
+                    &framebufferInfo,
+                    nullptr,
+                    &swapChainFramebuffers[i]) != VK_SUCCESS) {
                 throw std::runtime_error("failed to create framebuffer!");
             }
         }

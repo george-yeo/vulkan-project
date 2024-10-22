@@ -65,7 +65,7 @@ namespace oys {
 			pipelineConfig);
 	}
 
-	void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<OysGameObject>& gameObjects) {
+	void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<OysGameObject>& gameObjects, const OysCamera& camera) {
 		oysPipeline->bind(commandBuffer);
 
 		for (auto& obj : gameObjects) {
@@ -74,7 +74,7 @@ namespace oys {
 
 			SimplePushConstantData push{};
 			push.color = obj.color;
-			push.transform = obj.transform.mat4();
+			push.transform = camera.getProjection() * obj.transform.mat4();
 
 			vkCmdPushConstants(
 				commandBuffer,
