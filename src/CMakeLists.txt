@@ -1,19 +1,12 @@
-# Automatically find and include all .cpp files in src/ folder
-file(GLOB SOURCES "*.cpp")
+set(SRC_FILES
+    core/engine.cpp
+)
 
-# Create the main executable
-add_executable("oyster_engine" ${SOURCES} "oys_pipeline.cpp" "oys_model.cpp"  "oys_renderer.cpp" "simple_render_system.cpp"  "oys_camera.cpp")
+add_library(OysterEngine STATIC ${SRC_FILES})
 
-if(ENABLE_CHECKSTYLE)
-    target_compile_options(oyster_engine PRIVATE
-        $<$<CXX_COMPILER_ID:MSVC>:
-            /W4          # Set warning level to 4 for MSVC
-            /WX          # Treat warnings as errors in MSVC
-            /w44365>    # Disable specific MSVC warning
-        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:
-            -W4          # Set warning level to 4 for GCC/Clang
-            -WX          # Treat warnings as errors in GCC/Clang
-            -w44365
-        >
-    )
-endif()
+# Link Vulkan, GLFW, and other dependencies
+find_package(Vulkan REQUIRED)
+find_package(glfw3 REQUIRED)
+
+target_include_directories(OysterEngine PUBLIC ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(OysterEngine PRIVATE Vulkan::Vulkan glfw)

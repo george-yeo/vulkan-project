@@ -1,145 +1,27 @@
-cmake_minimum_required(VERSION "3.29")
+cmake_minimum_required(VERSION 3.20)
+project(OysterEngine)
 
-project("oys_engine")
-
-# Define the C++ standard
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Include the FetchContent module
-include(FetchContent)
-
-# Fetch GLFW 3.4
-FetchContent_Declare(
-  glfw
-  GIT_REPOSITORY https://github.com/glfw/glfw.git
-  GIT_TAG 3.4
-)
-FetchContent_MakeAvailable(glfw)
-
-# Fetch GLM (replace 0.9.9.8 with 1.0.1 if available)
-FetchContent_Declare(
-  glm
-  GIT_REPOSITORY https://github.com/g-truc/glm.git
-  GIT_TAG 1.0.1
-)
-FetchContent_MakeAvailable(glm)
-
-# Find Vulkan SDK
-find_package(Vulkan REQUIRED)
-
-option(COMPILE_SHADERS "Compile shaders to SPIR-V during the build process" ON)
-
-if(COMPILE_SHADERS)
-    ## Fetch glslang and SPRI-V tools for shader compilation
-    #FetchContent_Declare(
-    #    spirv-headers
-    #    GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Headers.git
-    #    GIT_TAG vulkan-sdk-1.3.283.0  # You can specify a stable tag here if preferred
-    #)
-    #FetchContent_MakeAvailable(spirv-headers)
-
-    #FetchContent_Declare(
-    #    spirv-tools
-    #    GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Tools.git
-    #    GIT_TAG vulkan-sdk-1.3.283.0
-    #)
-    #FetchContent_MakeAvailable(spirv-tools)
-
-    #FetchContent_Declare(
-    #  glslang
-    #  GIT_REPOSITORY https://github.com/KhronosGroup/glslang.git
-    #  GIT_TAG vulkan-sdk-1.3.283.0
-    #)
-    #FetchContent_MakeAvailable(glslang)
-
-    # Specify the path to the glslc executable
-    #set(GLSLC_EXECUTABLE "${glslang_SOURCE_DIR}/glslc")
-    find_program(GLSLC_EXECUTABLE glslc)
-    
-    set(SHADERS
-        ${CMAKE_SOURCE_DIR}/shaders/simple_shader.vert
-        ${CMAKE_SOURCE_DIR}/shaders/simple_shader.frag
-    )
-
-    set(SHADER_OUTPUT_DIR ${CMAKE_BINARY_DIR}/shaders)
-    file(MAKE_DIRECTORY ${SHADER_OUTPUT_DIR})
-
-    foreach(SHADER ${SHADERS})
-        get_filename_component(SHADER_NAME ${SHADER} NAME)
-        set(COMPILED_SHADER ${SHADER_OUTPUT_DIR}/${SHADER_NAME}.spv)
-
-        # Add custom command to compile the shader
-        add_custom_command(
-            OUTPUT ${COMPILED_SHADER}                            # The output file
-            COMMAND ${GLSLC_EXECUTABLE} ${SHADER} -o ${COMPILED_SHADER}  # The command
-            DEPENDS ${SHADER}                                    # The shader source file                 # Specify that this is a generated file
-            COMMENT "Compiling shader ${SHADER} to ${COMPILED_SHADER}"   # Status message
-            VERBATIM
-        )
-
-        # Collect the output shaders to a list for later use if needed
-        list(APPEND COMPILED_SHADERS ${COMPILED_SHADER})
-    endforeach()
-
-    # Add a custom target to compile all shaders
-    add_custom_target(compile_shaders ALL
-        DEPENDS ${COMPILED_SHADERS}
-        COMMENT "Compiling all shaders"
-    )
+# Enable cross-platform support
+if(WIN32)
+    set(OS_PLATFORM "Windows")
+elseif(APPLE)
+    set(OS_PLATFORM "MacOS")
+elseif(UNIX)
+    set(OS_PLATFORM "Linux")
 endif()
 
-# Compile with code coverage
-if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT COMPILE_SHADERS AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    message(STATUS "Building with coverage")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 --coverage")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
-endif()
+# Enable debugging symbols
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Include project header files
-include_directories(include)
+# Add external dependencies
+add_subdirectory(extern)
 
-# Add subdirectory for sources
-add_subdirectory("src")
+# Add engine source
+add_subdirectory(src)
 
-# Link the libraries to the program
-target_link_libraries(oyster_engine PRIVATE glfw glm Vulkan::Vulkan)
-target_include_directories(oyster_engine PRIVATE ${Vulkan_INCLUDE_DIRS})
-
-option(ENABLE_CHECKSTYLE "Clang-tidy and Cppcheck checkstyle" ON)
-
-if(ENABLE_CHECKSTYLE)
-    # Enable clang-tidy
-    set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*")
-
-    # Add cppcheck custom target
-    find_program(CPPCHECK cppcheck)
-
-    # Define the cppcheck options
-    set(CPPCHECK_OPTIONS
-        --enable=all               # Enable all checks (including style, performance, etc.)
-        --inconclusive             # Include inconclusive results (for thorough analysis)
-        --error-exitcode=1         # Exit with code 1 if any errors are found (useful in CI)
-        --suppress=missingInclude  # Suppress include-related warnings (can be configured as needed)
-        --inline-suppr             # Enable inline suppressions within the code
-        --force                    # Force checking of all files
-        -j 4                       # Use multiple threads for faster checks
-    )
-
-    # Custom target to run cppcheck on all source files
-    if(CPPCHECK)
-        add_custom_target(run-cppcheck
-            COMMAND ${CPPCHECK} ${CPPCHECK_OPTIONS} ${CMAKE_SOURCE_DIR}/src/
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            COMMENT "Running cppcheck analysis on source files"
-            VERBATIM
-        )
-    endif()
-endif()
-
-# Enable testing
+# Enable unit tests
 enable_testing()
-
-add_subdirectory("tests")
+add_subdirectory(tests)
