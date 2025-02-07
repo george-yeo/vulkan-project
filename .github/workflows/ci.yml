@@ -1,140 +1,54 @@
-name: CI
+name: Vulkan Game Engine CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  build-ubuntu:
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest] # Add macos-latest if needed
+    runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Cache CMake build files
-        uses: actions/cache@v3
-        with:
-          path: build
-          key: ${{ runner.os }}-cmake-${{ hashFiles('CMakeLists.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-cmake
-          
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install cmake lcov libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev libglfw3-dev libglm-dev 
-      - name: Setup VulkanCI
-        uses: NcStudios/VulkanCI@v1.1
-      - name: Build project
-        run: |
-          cmake -DCMAKE_BUILD_TYPE=Debug -DCOMPILE_SHADERS=OFF -DENABLE_CHECKSTYLE=OFF -DCMAKE_CXX_FLAGS="-ftest-coverage" .
-          make
-      - name: Run tests and generate coverage
-        run: |
-          ctest --output-on-failure
-          lcov --directory . --capture --output-file coverage.info
-          lcov --remove coverage.info '/usr/*' '*/tests/*' --output-file coverage.info
-          lcov --list coverage.info
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.info
-          fail_ci_if_error: true
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  build-windows:
-    runs-on: windows-latest
+      - name: Install Vulkan SDK (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe" -OutFile "vulkan-sdk.exe"
+          Start-Process -FilePath "vulkan-sdk.exe" -ArgumentList "/S" -NoNewWindow -Wait
+          echo "VULKAN_SDK=C:\VulkanSDK\1.3.250.1" >> $GITHUB_ENV
+          echo "C:\VulkanSDK\1.3.250.1\Bin" >> $GITHUB_PATH
+        shell: powershell
 
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Cache CMake build files
-        uses: actions/cache@v3
-        with:
-          path: build
-          key: ${{ runner.os }}-cmake-${{ hashFiles('CMakeLists.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-cmake
-            
-      - name: Cache CMake files
-        uses: actions/cache@v3
-        with:
-          path: C:\Program Files\CMake\bin
-          key: ${{ runner.os }}-cmakefiles-${{ hashFiles('CMakeLists.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-cmakefiles
-            
-      - name: Check CMake Installation
-        id: check_cmake
-        shell: pwsh
+      - name: Install Vulkan SDK (Linux)
+        if: runner.os == 'Linux'
         run: |
-          if (Test-Path "C:\Program Files\CMake\bin\cmake.exe") {
-            Write-Host "CMake is available from cache."
-            echo "cmake_installed=false" >> $GITHUB_ENV  # Set the environment variable
-          } else {
-            Write-Host "CMake not found, installing..."
-            echo "cmake_installed=true" >> $GITHUB_ENV  # Set the environment variable
-          }
-  
-      - name: Install CMake
-        if: env.cmake_installed == 'true'
-        run: |
-          choco install cmake
-          
-      - name: Install dependencies
-        run: |
-          choco install glfw3
-      - name: Setup VulkanCI
-        uses: NcStudios/VulkanCI@v1.1
-      - name: Build project
-        run: |
-          cmake -DCMAKE_BUILD_TYPE=Debug -DCOMPILE_SHADERS=OFF -DENABLE_CHECKSTYLE=OFF -DCMAKE_CXX_FLAGS="-ftest-coverage" .
-          cmake --build . --config Debug
-      - name: Run tests and generate coverage
-        run: |
-          ctest --output-on-failure -C Debug
-# lcov --capture --directory . --output-file coverage.info
-# lcov --remove coverage.info /usr/src/ --output-file coverage.info
-# genhtml coverage.info --output-directory coverage
+          wget -qO vulkan-sdk.tar.gz https://sdk.lunarg.com/sdk/latest/linux/vulkan-sdk.tar.gz
+          tar -xzf vulkan-sdk.tar.gz
+          export VULKAN_SDK=$GITHUB_WORKSPACE/$(ls | grep VulkanSDK)
+          echo "VULKAN_SDK=$VULKAN_SDK" >> $GITHUB_ENV
+          echo "$VULKAN_SDK/bin" >> $GITHUB_PATH
 
-  # build-macos:
-  #   runs-on: macos-latest
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y cmake ninja-build xorg-dev libglfw3-dev libglm-dev
+        if: runner.os == 'Linux'
 
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Install dependencies
-  #       run: |
-  #         brew install cmake lcov checkstyle libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev libglfw3-dev libglm-dev
-  #     - name: Setup VulkanCI
-  #       uses: NcStudios/VulkanCI@v1.1
-  #     - name: Build project
-  #       run: |
-  #         cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-ftest-coverage" .
-  #         make
-  #     - name: Run tests and generate coverage
-  #       run: |
-  #         ctest --output-on-failure
-  #         lcov --capture --directory . --output-file coverage.info
-  #         lcov --remove coverage.info /usr/src/ --output-file coverage.info
-  #         genhtml coverage.info --output-directory coverage
-  #     - name: Check code style
-  #       run: |
-  #         checkstyle -c checkstyle.xml src/ tests/
-          
-  generate-docs:
-    runs-on: ubuntu-latest
+      - name: Configure CMake
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install Doxygen
-        run: sudo apt-get install doxygen graphviz
-      - name: Generate documentation
-        run: doxygen Doxyfile
-      - name: Deploy Documentation to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.DEPLOYMENT_TOKEN }}
-          publish_dir: ./docs/html
-          publish_branch: gh-pages
+      - name: Build Vulkan Engine
+        run: cmake --build build --config Release
+
+      - name: Run Tests
+        working-directory: build
+        run: ctest --output-on-failure
